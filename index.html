@@ -122,6 +122,11 @@
       <article class="card">
         <h2>Calculadora da soma dos termos</h2>
         <p class="hint">Calcule a soma dos primeiros termos de uma PG finita.</p>
+        <div class="example">
+          <strong>Fórmula da soma:</strong> Sₙ = a₁ × (qⁿ − 1) ÷ (q − 1), quando q é diferente de 1.<br>
+          Se q = 1, todos os termos são iguais, então usamos Sₙ = n × a₁.<br>
+          <strong>Exemplo:</strong> na PG 2, 6, 18, 54, a soma dos 4 termos é 2 + 6 + 18 + 54 = 80.
+        </div>
         <div class="grid">
           <div><label for="sumA1">Primeiro termo (a₁)</label><input id="sumA1" type="number" step="any" placeholder="Ex.: 2"></div>
           <div><label for="sumQ">Razão (q)</label><input id="sumQ" type="number" step="any" placeholder="Ex.: 3"></div>
@@ -231,6 +236,7 @@
         let result, steps;
         if (q === 1) {
           result = a1 * n;
+          if (!Number.isFinite(result)) throw new Error('A soma é grande demais para ser representada com segurança.');
           steps = [
             'Como q = 1, usamos Sₙ = n × a₁',
             `Substituindo: S${subscript(n)} = ${n} × ${format(a1)}`,
