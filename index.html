@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PG Fácil | Aprenda Progressão Geométrica</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #f5f7fc; --surface: #fff; --ink: #20243a; --muted: #68708a;
+      --accent: #5264d8; --accent-soft: #eef0ff; --border: #e5e8f2;
+      --danger: #b42336; --success: #18794e;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, Segoe UI, sans-serif; }
+    header { padding: 34px 20px 24px; text-align: center; background: linear-gradient(135deg,#eef0ff,#f8f9ff); }
+    header h1 { margin: 0 0 6px; font-size: clamp(1.8rem,4vw,2.5rem); letter-spacing: -.04em; }
+    header p { margin: 0; color: var(--muted); }
+    main { width: min(980px, calc(100% - 32px)); margin: 24px auto 60px; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; padding: 7px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+    nav button { flex: 1; min-width: 125px; border: 0; background: transparent; color: var(--muted); padding: 11px 14px; border-radius: 9px; font: inherit; cursor: pointer; }
+    nav button.active { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+    .panel { display: none; margin-top: 18px; }
+    .panel.active { display: block; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: clamp(18px,3vw,26px); margin-bottom: 16px; }
+    h2 { margin: 0 0 12px; font-size: 1.35rem; }
+    h3 { margin: 20px 0 7px; font-size: 1.05rem; }
+    p { margin: 8px 0; }
+    .muted, .hint { color: var(--muted); }
+    .formula { display: inline-block; margin: 8px 0; padding: 10px 15px; border-radius: 10px; background: var(--accent-soft); color: #3545b5; font-size: 1.13rem; font-weight: 700; }
+    .example { border-left: 3px solid var(--accent); padding: 9px 14px; margin: 12px 0; background: #fafaff; }
+    .grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 13px; }
+    label { display: block; font-weight: 650; font-size: .94rem; margin-bottom: 5px; }
+    input { width: 100%; border: 1px solid #cfd4e3; border-radius: 9px; padding: 11px 12px; font: inherit; color: var(--ink); background: white; }
+    input:focus { outline: 3px solid #dfe3ff; border-color: var(--accent); }
+    .actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 16px; }
+    .actions button { border: 1px solid var(--accent); border-radius: 9px; padding: 10px 15px; background: var(--accent); color: white; font: inherit; font-weight: 650; cursor: pointer; }
+    .actions button.secondary { background: white; color: var(--accent); }
+    .result { margin-top: 18px; padding: 16px; background: #f8f9ff; border: 1px solid var(--border); border-radius: 12px; }
+    .result[hidden] { display: none; }
+    .answer { font-size: 1.35rem; font-weight: 800; color: var(--success); overflow-wrap: anywhere; }
+    .steps p { margin: 7px 0; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
+    .message { color: var(--danger); font-weight: 600; margin-top: 10px; }
+    .sequence { font-weight: 700; overflow-wrap: anywhere; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-size: .9rem; }
+    .chart-wrap { position: relative; height: 320px; margin-top: 16px; }
+    footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 0 16px 25px; }
+    @media (max-width: 650px) { .grid { grid-template-columns: 1fr; } .chart-wrap { height: 260px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PG Fácil</h1>
+    <p>Entenda a Progressão Geométrica com exemplos, cálculos e gráficos.</p>
+  </header>
+
+  <main>
+    <nav aria-label="Abas principais">
+      <button class="active" data-tab="explicacao">Explicação</button>
+      <button data-tab="calculadora">Calculadora</button>
+      <button data-tab="gerador">Gerador de PG</button>
+    </nav>
+
+    <section id="explicacao" class="panel active">
+      <article class="card">
+        <h2>O que é uma Progressão Geométrica?</h2>
+        <p>Uma <strong>Progressão Geométrica (PG)</strong> é uma sequência numérica em que cada termo, a partir do segundo, é obtido multiplicando o termo anterior por um mesmo número. Esse número é chamado de <strong>razão (q)</strong>.</p>
+        <div class="example">Exemplo: <strong>2, 6, 18, 54, 162...</strong><br>De um termo para o próximo, multiplicamos por 3. Portanto, q = 3.</div>
+        <h3>Elementos de uma PG</h3>
+        <ul>
+          <li><strong>a₁:</strong> primeiro termo da sequência.</li>
+          <li><strong>q:</strong> razão, o fator pelo qual multiplicamos cada termo.</li>
+          <li><strong>n:</strong> posição do termo que queremos encontrar.</li>
+          <li><strong>aₙ:</strong> termo que ocupa a posição n.</li>
+        </ul>
+        <h3>Fórmula do termo geral</h3>
+        <div class="formula">aₙ = a₁ × q⁽ⁿ⁻¹⁾</div>
+        <p>Em palavras: o termo desejado é o primeiro termo multiplicado pela razão elevada à posição menos um.</p>
+        <div class="example">Para encontrar o 4º termo de 2, 6, 18, 54...<br>a₄ = 2 × 3⁽⁴⁻¹⁾ = 2 × 3³ = 2 × 27 = <strong>54</strong>.</div>
+        <h3>Como encontrar a razão?</h3>
+        <div class="formula">q = a₂ ÷ a₁</div>
+        <p>Dividimos um termo pelo seu antecessor. Também podemos usar qualquer par de termos consecutivos. A divisão precisa ser possível, então não usamos essa conta quando o antecessor é zero.</p>
+        <div class="example">Na sequência 5, 10, 20...: q = 10 ÷ 5 = <strong>2</strong>.</div>
+      </article>
+      <article class="card">
+        <h2>Classificações</h2>
+        <h3>Crescente</h3><p>Os termos aumentam. Exemplo: <strong>2, 4, 8, 16...</strong> (q = 2).</p>
+        <h3>Decrescente</h3><p>Os termos diminuem. Exemplo: <strong>16, 8, 4, 2...</strong> (q = 0,5).</p>
+        <h3>Constante</h3><p>Todos os termos são iguais. Exemplo: <strong>7, 7, 7, 7...</strong> (q = 1).</p>
+        <h3>Alternante</h3><p>Os sinais dos termos alternam. Exemplo: <strong>3, -6, 12, -24...</strong> (q = -2).</p>
+        <p class="muted">A classificação depende do primeiro termo e da razão. Uma PG com primeiro termo zero, por exemplo, é formada apenas por zeros.</p>
+      </article>
+    </section>
+
+    <section id="calculadora" class="panel">
+      <article class="card">
+        <h2>Calculadora do termo geral</h2>
+        <p class="hint">Informe o primeiro termo, a razão e a posição que deseja descobrir.</p>
+        <div class="grid">
+          <div><label for="calcA1">Primeiro termo (a₁)</label><input id="calcA1" type="number" step="any" placeholder="Ex.: 2"></div>
+          <div><label for="calcQ">Razão (q)</label><input id="calcQ" type="number" step="any" placeholder="Ex.: 3"></div>
+          <div><label for="calcN">Posição (n)</label><input id="calcN" type="number" step="1" min="1" placeholder="Ex.: 4"></div>
+        </div>
+        <div class="actions">
+          <button id="calcButton">Calcular termo</button>
+          <button class="secondary" id="calcExample">Preencher exemplo</button>
+          <button class="secondary" id="calcClear">Limpar</button>
+        </div>
+        <div id="calcMessage" class="message" role="alert"></div>
+        <div id="calcResult" class="result" hidden aria-live="polite">
+          <h3>Desenvolvimento</h3>
+          <div id="calcSteps" class="steps"></div>
+          <p id="calcAnswer" class="answer"></p>
+        </div>
+      </article>
+    </section>
+
+    <section id="gerador" class="panel">
+      <article class="card">
+        <h2>Gerador de Progressão Geométrica</h2>
+        <p class="hint">Escolha o primeiro termo, a razão e quantos termos deseja visualizar (de 1 a 100).</p>
+        <div class="grid">
+          <div><label for="genA1">Primeiro termo (a₁)</label><input id="genA1" type="number" step="any" placeholder="Ex.: 2"></div>
+          <div><label for="genQ">Razão (q)</label><input id="genQ" type="number" step="any" placeholder="Ex.: 3"></div>
+          <div><label for="genCount">Quantidade de termos</label><input id="genCount" type="number" step="1" min="1" max="100" placeholder="Ex.: 5"></div>
+        </div>
+        <div class="actions">
+          <button id="genButton">Gerar sequência</button>
+          <button class="secondary" id="genExample">Preencher exemplo</button>
+          <button class="secondary" id="genClear">Limpar</button>
+        </div>
+        <div id="genMessage" class="message" role="alert"></div>
+        <div id="genResult" class="result" hidden aria-live="polite">
+          <h3>Sequência gerada</h3>
+          <p id="genSequence" class="sequence"></p>
+          <p><strong>Classificação:</strong> <span id="genClass"></span></p>
+          <p><strong>Fórmula:</strong> aₙ = <span id="genFormula"></span></p>
+          <h3>Termos e posições</h3>
+          <div style="overflow-x:auto">
+            <table><thead><tr><th>Posição</th><th>Valor</th></tr></thead><tbody id="genTable"></tbody></table>
+          </div>
+          <h3>Gráfico dos termos</h3>
+          <p class="hint">Cada ponto representa um termo da sequência. Passe o cursor ou toque em um ponto para ver sua posição e seu valor.</p>
+          <div class="chart-wrap"><canvas id="pgChart" aria-label="Gráfico dos termos da progressão geométrica"></canvas></div>
+        </div>
+      </article>
+    </section>
+  </main>
+  <footer>PG Fácil · Uma ferramenta de apoio para estudar matemática.</footer>
+
+  <script>
+    // troca a aba que aparece na tela
+    document.querySelectorAll('nav button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('nav button').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+        button.classList.add('active');
+        document.getElementById(button.dataset.tab).classList.add('active');
+      });
+    });
+
+    const $ = id => document.getElementById(id);
+    const format = value => {
+      if (!Number.isFinite(value)) return 'valor fora do limite numérico';
+      return Number(value.toPrecision(10)).toString();
+    };
+    const readNumber = id => {
+      const field = $(id);
+      if (field.value.trim() === '') throw new Error('Preencha todos os campos antes de continuar.');
+      const value = Number(field.value);
+      if (!Number.isFinite(value)) throw new Error('Digite apenas números válidos.');
+      return value;
+    };
+    const readPosition = (id, max) => {
+      const value = readNumber(id);
+      if (!Number.isInteger(value) || value < 1 || (max && value > max))
+        throw new Error(max ? `A quantidade deve ser um inteiro entre 1 e ${max}.` : 'A posição n deve ser um número inteiro positivo.');
+      return value;
+    };
+
+    function calculateTerm() {
+      $('calcMessage').textContent = '';
+      $('calcResult').hidden = true;
+      try {
+        const a1 = readNumber('calcA1'), q = readNumber('calcQ'), n = readPosition('calcN');
+        const power = Math.pow(q, n - 1);
+        const result = a1 * power;
+        if (!Number.isFinite(result)) throw new Error('O resultado é grande demais para ser representado com segurança pelo navegador. Tente uma posição menor ou outros valores.');
+        // mostra as etapas da fórmula com os números que a pessoa digitou
+        $('calcSteps').innerHTML = `
+          <p>Fórmula: aₙ = a₁ × q⁽ⁿ⁻¹⁾</p>
+          <p>Substituindo: a${subscript(n)} = ${format(a1)} × ${format(q)}⁽${n}⁻¹⁾</p>
+          <p>Potência: a${subscript(n)} = ${format(a1)} × ${format(power)}</p>
+          <p>Multiplicação: a${subscript(n)} = ${format(result)}</p>`;
+        $('calcAnswer').textContent = `Resultado: a${subscript(n)} = ${format(result)}`;
+        $('calcResult').hidden = false;
+      } catch (error) { $('calcMessage').textContent = error.message; }
+    }
+
+    function subscript(number) {
+      return String(number).replace(/\d/g, digit => '₀₁₂₃₄₅₆₇₈₉'[Number(digit)]);
+    }
+
+    $('calcButton').addEventListener('click', calculateTerm);
+    $('calcExample').addEventListener('click', () => {
+      $('calcA1').value = 2; $('calcQ').value = 3; $('calcN').value = 4; calculateTerm();
+    });
+    $('calcClear').addEventListener('click', () => {
+      ['calcA1','calcQ','calcN'].forEach(id => $(id).value = '');
+      $('calcMessage').textContent = ''; $('calcResult').hidden = true;
+    });
+
+    function classify(a1, q) {
+      if (a1 === 0 || q === 1) return 'Constante';
+      if (q < 0) return 'Alternante';
+      if (q > 1) return a1 > 0 ? 'Crescente' : 'Decrescente';
+      if (q > 0 && q < 1) return a1 > 0 ? 'Decrescente' : 'Crescente';
+      return 'Não se enquadra nas classificações tradicionais';
+    }
+
+    let chart = null;
+    function generatePG() {
+      $('genMessage').textContent = '';
+      $('genResult').hidden = true;
+      try {
+        const a1 = readNumber('genA1'), q = readNumber('genQ'), count = readPosition('genCount', 100);
+        const terms = [];
+        let current = a1;
+        // guarda os termos que foram gerados
+        for (let i = 0; i < count; i++) {
+          if (!Number.isFinite(current)) throw new Error('Os termos ficaram grandes demais para o navegador representar. Reduza a quantidade ou altere a razão.');
+          terms.push(current);
+          current *= q;
+        }
+        $('genSequence').textContent = terms.map(format).join(', ');
+        $('genClass').textContent = classify(a1, q);
+        $('genFormula').textContent = `${format(a1)} × ${format(q)}⁽ⁿ⁻¹⁾`;
+        $('genTable').innerHTML = terms.map((value, index) =>
+          `<tr><td>a${subscript(index + 1)}</td><td>${format(value)}</td></tr>`).join('');
+        $('genResult').hidden = false;
+
+        const labels = terms.map((_, index) => `a${subscript(index + 1)}`);
+        if (chart) chart.destroy();
+        if (typeof Chart === 'undefined') {
+          $('genMessage').textContent = 'A biblioteca do gráfico não carregou. Verifique sua conexão com a internet e atualize a página.';
+          return;
+        }
+        chart = new Chart($('pgChart'), {
+          type: 'line',
+          data: { labels, datasets: [{
+            label: 'Valor do termo',
+            data: terms,
+            borderColor: '#5264d8',
+            backgroundColor: '#5264d8',
+            pointRadius: 5,
+            pointHoverRadius: 8,
+            showLine: true,
+            tension: 0
+          }]},
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'nearest', intersect: true },
+            plugins: { legend: { display: false }, tooltip: {
+              callbacks: { label: context => `Valor: ${format(context.raw)}` }
+            }},
+            scales: {
+              x: { title: { display: true, text: 'Posição do termo' } },
+              y: { title: { display: true, text: 'Valor do termo' }, ticks: {
+                callback: value => format(Number(value))
+              }}
+            }
+          }
+        });
+      } catch (error) { $('genMessage').textContent = error.message; }
+    }
+
+    $('genButton').addEventListener('click', generatePG);
+    $('genExample').addEventListener('click', () => {
+      $('genA1').value = 2; $('genQ').value = 3; $('genCount').value = 5; generatePG();
+    });
+    $('genClear').addEventListener('click', () => {
+      ['genA1','genQ','genCount'].forEach(id => $(id).value = '');
+      $('genMessage').textContent = ''; $('genResult').hidden = true;
+      if (chart) { chart.destroy(); chart = null; }
+    });
+  </script>
+</body>
+</html>
