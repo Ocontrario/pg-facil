@@ -60,6 +60,7 @@
     <nav aria-label="Abas principais">
       <button class="active" data-tab="explicacao">Explicação</button>
       <button data-tab="calculadora">Calculadora</button>
+      <button data-tab="soma">Soma dos termos</button>
       <button data-tab="gerador">Gerador de PG</button>
     </nav>
 
@@ -113,6 +114,29 @@
           <h3>Desenvolvimento</h3>
           <div id="calcSteps" class="steps"></div>
           <p id="calcAnswer" class="answer"></p>
+        </div>
+      </article>
+    </section>
+
+    <section id="soma" class="panel">
+      <article class="card">
+        <h2>Calculadora da soma dos termos</h2>
+        <p class="hint">Calcule a soma dos primeiros termos de uma PG finita.</p>
+        <div class="grid">
+          <div><label for="sumA1">Primeiro termo (a₁)</label><input id="sumA1" type="number" step="any" placeholder="Ex.: 2"></div>
+          <div><label for="sumQ">Razão (q)</label><input id="sumQ" type="number" step="any" placeholder="Ex.: 3"></div>
+          <div><label for="sumN">Quantidade de termos (n)</label><input id="sumN" type="number" step="1" min="1" placeholder="Ex.: 4"></div>
+        </div>
+        <div class="actions">
+          <button id="sumButton">Calcular soma</button>
+          <button class="secondary" id="sumExample">Preencher exemplo</button>
+          <button class="secondary" id="sumClear">Limpar</button>
+        </div>
+        <div id="sumMessage" class="message" role="alert"></div>
+        <div id="sumResult" class="result" hidden aria-live="polite">
+          <h3>Desenvolvimento</h3>
+          <div id="sumSteps" class="steps"></div>
+          <p id="sumAnswer" class="answer"></p>
         </div>
       </article>
     </section>
@@ -198,6 +222,45 @@
         $('calcResult').hidden = false;
       } catch (error) { $('calcMessage').textContent = error.message; }
     }
+
+    function calculateSum() {
+      $('sumMessage').textContent = '';
+      $('sumResult').hidden = true;
+      try {
+        const a1 = readNumber('sumA1'), q = readNumber('sumQ'), n = readPosition('sumN');
+        let result, steps;
+        if (q === 1) {
+          result = a1 * n;
+          steps = [
+            'Como q = 1, usamos Sₙ = n × a₁',
+            `Substituindo: S${subscript(n)} = ${n} × ${format(a1)}`,
+            `Multiplicando: S${subscript(n)} = ${format(result)}`
+          ];
+        } else {
+          const power = Math.pow(q, n);
+          result = a1 * (power - 1) / (q - 1);
+          if (!Number.isFinite(result)) throw new Error('A soma é grande demais para ser representada com segurança. Tente uma quantidade menor ou outros valores.');
+          steps = [
+            'Fórmula: Sₙ = a₁ × (qⁿ − 1) ÷ (q − 1)',
+            `Substituindo: S${subscript(n)} = ${format(a1)} × (${format(q)}^${n} − 1) ÷ (${format(q)} − 1)`,
+            `Calculando a potência: S${subscript(n)} = ${format(a1)} × (${format(power)} − 1) ÷ (${format(q - 1)})`,
+            `Resultado: S${subscript(n)} = ${format(result)}`
+          ];
+        }
+        $('sumSteps').innerHTML = steps.map(step => `<p>${step}</p>`).join('');
+        $('sumAnswer').textContent = `Soma dos ${n} primeiros termos: ${format(result)}`;
+        $('sumResult').hidden = false;
+      } catch (error) { $('sumMessage').textContent = error.message; }
+    }
+
+    $('sumButton').addEventListener('click', calculateSum);
+    $('sumExample').addEventListener('click', () => {
+      $('sumA1').value = 2; $('sumQ').value = 3; $('sumN').value = 4; calculateSum();
+    });
+    $('sumClear').addEventListener('click', () => {
+      ['sumA1','sumQ','sumN'].forEach(id => $(id).value = '');
+      $('sumMessage').textContent = ''; $('sumResult').hidden = true;
+    });
 
     function subscript(number) {
       return String(number).replace(/\d/g, digit => '₀₁₂₃₄₅₆₇₈₉'[Number(digit)]);
